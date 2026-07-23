@@ -81,8 +81,6 @@ Guess
 
 
 <script>
-
-
 function getDailyNumber(){
 
 let today = new Date();
@@ -90,7 +88,6 @@ let today = new Date();
 let seed = today.getFullYear() +
 today.getMonth() +
 today.getDate();
-
 
 let random = Math.sin(seed) * 1000000;
 
@@ -101,6 +98,7 @@ return Math.floor(Math.abs(random));
 
 let answer = getDailyNumber();
 
+let guesses = [];
 
 
 function checkGuess(){
@@ -110,33 +108,79 @@ document.getElementById("guess").value
 );
 
 
+if(guess < 1 || guess > 1000000){
+    alert("Enter a number between 1 and 1,000,000");
+    return;
+}
+
+
+guesses.push(guess);
+
+
+let history =
+document.getElementById("history");
+
+
 let result =
 document.getElementById("result");
 
 
+let guessesLeft =
+document.getElementById("guessesLeft");
+
+
+guessesLeft.innerHTML =
+"Guesses Left: " + (6 - guesses.length);
+
+
+
+let message = "";
+
 
 if(guess == answer){
 
-result.innerHTML="🎉 YOU GOT IT!";
+message = "🎉 Correct!";
 
 }
 
 else if(guess > answer){
 
-result.innerHTML="⬇️ Too High";
+message = "⬇️ Too High";
 
 }
 
 else{
 
-result.innerHTML="⬆️ Too Low";
+message = "⬆️ Too Low";
+
+}
+
+
+
+history.innerHTML += 
+"<p>Guess " + guesses.length + 
+"<br>" + guess +
+"<br>" + message +
+"</p>";
+
+
+
+if(guesses.length >= 6 && guess != answer){
+
+result.innerHTML = 
+"Game Over!";
+
+}
+
+if(guess == answer){
+
+result.innerHTML =
+"🎉 You solved it!";
 
 }
 
 
 }
-
-
 </script>
 
 
