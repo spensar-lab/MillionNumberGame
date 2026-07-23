@@ -50,13 +50,23 @@ button {
 
 <div class="box">
 
-<h1>🎯 Million Number Game</h1>
+<h1>🎯 Daily Million</h1>
 
 <p>Guess the daily number between 1 and 1,000,000</p>
 
-<input id="guess" type="number">
+<h2 id="guessesLeft">
+Guesses Left: 6
+</h2>
 
-<br>
+<input 
+id="guess" 
+type="number" 
+min="1" 
+max="1000000"
+placeholder="Enter your guess"
+>
+
+<br><br>
 
 <button onclick="checkGuess()">
 Guess
@@ -64,6 +74,7 @@ Guess
 
 <h2 id="result"></h2>
 
+<div id="history"></div>
 
 </div>
 
