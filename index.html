@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Million Number Game</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background:#111827;
+    color:white;
+    text-align:center;
+    padding-top:100px;
+}
+
+.box {
+    background:#1f2937;
+    width:400px;
+    margin:auto;
+    padding:30px;
+    border-radius:15px;
+}
+
+input {
+    padding:15px;
+    font-size:20px;
+    width:80%;
+}
+
+button {
+    margin-top:20px;
+    padding:15px;
+    width:90%;
+    font-size:20px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:10px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="box">
+
+<h1>🎯 Million Number Game</h1>
+
+<p>Guess the daily number between 1 and 1,000,000</p>
+
+<input id="guess" type="number">
+
+<br>
+
+<button onclick="checkGuess()">
+Guess
+</button>
+
+<h2 id="result"></h2>
+
+
+</div>
+
+
+
+<script>
+
+
+function getDailyNumber(){
+
+let today = new Date();
+
+let seed = today.getFullYear() +
+today.getMonth() +
+today.getDate();
+
+
+let random = Math.sin(seed) * 1000000;
+
+return Math.floor(Math.abs(random));
+
+}
+
+
+let answer = getDailyNumber();
+
+
+
+function checkGuess(){
+
+let guess = Number(
+document.getElementById("guess").value
+);
+
+
+let result =
+document.getElementById("result");
+
+
+
+if(guess == answer){
+
+result.innerHTML="🎉 YOU GOT IT!";
+
+}
+
+else if(guess > answer){
+
+result.innerHTML="⬇️ Too High";
+
+}
+
+else{
+
+result.innerHTML="⬆️ Too Low";
+
+}
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
