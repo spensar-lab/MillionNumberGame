@@ -3,30 +3,39 @@
 
 <head>
 
-<title>Million Number Game</title>
+<title>Daily Million</title>
 
 <style>
 
 body {
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background:#111827;
     color:white;
     text-align:center;
-    padding-top:100px;
+    padding-top:50px;
 }
 
 .box {
     background:#1f2937;
     width:400px;
+    max-width:90%;
     margin:auto;
     padding:30px;
     border-radius:15px;
+    box-shadow:0 0 20px black;
+}
+
+h1 {
+    font-size:40px;
 }
 
 input {
     padding:15px;
-    font-size:20px;
+    font-size:22px;
     width:80%;
+    border-radius:10px;
+    border:none;
+    text-align:center;
 }
 
 button {
@@ -38,7 +47,38 @@ button {
     color:white;
     border:none;
     border-radius:10px;
+    cursor:pointer;
 }
+
+button:hover {
+    background:#1d4ed8;
+}
+
+.guess-card {
+
+    background:#374151;
+    margin-top:15px;
+    padding:15px;
+    border-radius:10px;
+    font-size:20px;
+
+}
+
+
+#result {
+
+    margin-top:20px;
+
+}
+
+
+.small {
+
+    color:#d1d5db;
+    font-size:18px;
+
+}
+
 
 </style>
 
@@ -50,137 +90,359 @@ button {
 
 <div class="box">
 
+
 <h1>🎯 Daily Million</h1>
 
-<p>Guess the daily number between 1 and 1,000,000</p>
+
+<p>
+Guess the daily number between
+<br>
+1 and 1,000,000
+</p>
+
 
 <h2 id="guessesLeft">
 Guesses Left: 6
 </h2>
 
+
 <input 
-id="guess" 
-type="number" 
-min="1" 
+id="guess"
+type="number"
+placeholder="Your guess"
+min="1"
 max="1000000"
-placeholder="Enter your guess"
 >
 
-<br><br>
+
+<br>
+
 
 <button onclick="checkGuess()">
+
 Guess
+
 </button>
+
 
 <h2 id="result"></h2>
 
+
 <div id="history"></div>
 
-</div>
+
+<p id="countdown" class="small"></p>
 
 
+</div><script>
 
-<script>
+
 function getDailyNumber(){
 
-let today = new Date();
+    let today = new Date();
 
-let seed = today.getFullYear() +
-today.getMonth() +
-today.getDate();
+    let seed =
+    today.getFullYear() +
+    today.getMonth() +
+    today.getDate();
 
-let random = Math.sin(seed) * 1000000;
 
-return Math.floor(Math.abs(random));
+    let random = Math.sin(seed) * 1000000;
+
+
+    return Math.floor(Math.abs(random));
 
 }
+
 
 
 let answer = getDailyNumber();
 
-let guesses = [];
 
 
-function checkGuess(){
+let todayKey =
+"dailyMillion_" +
+new Date().toDateString();
 
-let guess = Number(
-document.getElementById("guess").value
+
+
+let game = JSON.parse(
+localStorage.getItem(todayKey)
 );
 
 
-if(guess < 1 || guess > 1000000){
-    alert("Enter a number between 1 and 1,000,000");
-    return;
+
+if(game == null){
+
+    game = {
+
+        guesses:[],
+        finished:false
+
+    };
+
+    localStorage.setItem(
+        todayKey,
+        JSON.stringify(game)
+    );
+
 }
 
 
-guesses.push(guess);
+
+
+function updateScreen(){
 
 
 let history =
 document.getElementById("history");
 
 
-let result =
-document.getElementById("result");
-
-
 let guessesLeft =
 document.getElementById("guessesLeft");
 
 
+
+history.innerHTML = "";
+
+
+
+game.guesses.forEach(function(item,index){
+
+
+history.innerHTML +=
+
+`
+<div class="guess-card">
+
+Guess ${index + 1}
+
+<br>
+
+${item.number}
+
+<br>
+
+${item.message}
+
+</div>
+
+`;
+
+
+});
+
+
+
 guessesLeft.innerHTML =
-"Guesses Left: " + (6 - guesses.length);
+
+"Guesses Left: " +
+(6 - game.guesses.length);
+
+
+
+if(game.finished){
+
+    document.getElementById("guess").disabled=true;
+
+}
+
+
+}
+
+
+
+function checkGuess(){
+
+
+if(game.finished){
+
+    return;
+
+}
+
+
+
+let input =
+document.getElementById("guess");
+
+
+
+let guess =
+Number(input.value);
+
+
+
+if(
+guess < 1 ||
+guess > 1000000 ||
+input.value === ""
+){
+
+alert(
+"Enter a number between 1 and 1,000,000"
+);
+
+return;
+
+}
 
 
 
 let message = "";
 
 
+
 if(guess == answer){
+
 
 message = "🎉 Correct!";
 
+
+game.finished=true;
+
+
+document.getElementById("result").innerHTML =
+
+"🎉 You solved Daily Million!";
+
+
 }
+
+
 
 else if(guess > answer){
 
+
 message = "⬇️ Too High";
 
+
 }
+
+
 
 else{
 
+
 message = "⬆️ Too Low";
 
-}
-
-
-
-history.innerHTML += 
-"<p>Guess " + guesses.length + 
-"<br>" + guess +
-"<br>" + message +
-"</p>";
-
-
-
-if(guesses.length >= 6 && guess != answer){
-
-result.innerHTML = 
-"Game Over!";
-
-}
-
-if(guess == answer){
-
-result.innerHTML =
-"🎉 You solved it!";
 
 }
 
 
+
+
+game.guesses.push({
+
+number:guess,
+
+message:message
+
+});
+
+
+
+if(game.guesses.length >= 6 && guess != answer){
+
+
+game.finished=true;
+
+
+document.getElementById("result").innerHTML =
+
+"Game Over! Come back tomorrow.";
+
+
 }
+
+
+
+localStorage.setItem(
+
+todayKey,
+
+JSON.stringify(game)
+
+);
+
+
+
+input.value="";
+
+
+updateScreen();
+
+
+}
+
+
+updateScreen();
+
+function updateCountdown(){
+
+    let now = new Date();
+
+    let tomorrow = new Date();
+
+    tomorrow.setHours(24,0,0,0);
+
+
+    let difference =
+    tomorrow - now;
+
+
+    let hours =
+    Math.floor(
+        difference / (1000 * 60 * 60)
+    );
+
+
+    let minutes =
+    Math.floor(
+        (difference % (1000 * 60 * 60)) /
+        (1000 * 60)
+    );
+
+
+    let seconds =
+    Math.floor(
+        (difference % (1000 * 60)) /
+        1000
+    );
+
+
+    document.getElementById("countdown").innerHTML =
+
+    "Next Daily Million in: " +
+    hours + "h " +
+    minutes + "m " +
+    seconds + "s";
+
+}
+
+
+
+setInterval(updateCountdown,1000);
+
+updateCountdown();
+
+
+
+document.getElementById("guess")
+.addEventListener(
+"keydown",
+function(event){
+
+    if(event.key === "Enter"){
+
+        checkGuess();
+
+    }
+
+});
+
+
+
 </script>
 
 
